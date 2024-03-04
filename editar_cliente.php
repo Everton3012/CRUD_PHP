@@ -1,14 +1,16 @@
 <?php 
 
+    
+    include('conexao.php');
+    $id = intval($_GET['id']);
     function limpar_texto($str){
         return preg_replace("/[^0-9]/", "", $str);
     }
 
-    $erro = false;
+   
     if (count($_POST) > 0) {
 
-        include('conexao.php');
-
+        $erro = false;
         $nome = $_POST['nome'];
         $email = $_POST['email'];
         $telefone = $_POST['telefone'];
@@ -38,15 +40,25 @@
         if($erro) {
             echo "<p><b>ERRO: $erro</b></p>";
         } else {
-            $sql_code = "INSERT INTO clientes (nome, email, telefone, nascimento, data) VALUES ('$nome', '$email', '$telefone', '$nascimento', NOW())";
+            $sql_code = "UPDATE clientes 
+            SET nome = '$nome',
+            email = '$email', 
+            telefone = '$telefone', 
+            nascimento = '$nascimento'
+            WHERE id = '$id'";
+
             $deu_certo = $mysqli->query($sql_code) or die($mysqli->error);
             if ($deu_certo) {
-                print('<p><b>Cliente cadastrado com sucesso!!!
+                print('<p><b>Cliente atualizado com sucesso!!!
                 </b></p>');
                 unset($_POST);
             };
         };
     };
+    
+    $sql_cliente = "SELECT * FROM clientes WHERE id = '$id'";
+    $query_cliente = $mysqli->query(($sql_cliente) or die($mysqli->error));
+    $cliente = $query_cliente->fetch_assoc();
 ?>
 
 <!DOCTYPE html>
@@ -61,20 +73,20 @@
     <form method="POST">
         <p>
             <label for="nome">Nome: </label>
-            <input value="<?php if(isset($_POST['nome'])) echo $_POST['nome']?>" type="text" name="nome"/>
+            <input value="<?php echo $cliente['nome']?>" type="text" name="nome"/>
         </p>
         <p>
             <label for="email">Email: </label>
-            <input value="<?php if(isset($_POST['email'])) echo $_POST['email']?>" type="text" name="email"/>
+            <input value="<?php echo $cliente['email']?>" type="text" name="email"/>
         </p>
         <p>
             <label for="telefone">Telefone: </label>
-            <input value="<?php if(isset($_POST['telefone'])) echo $_POST['telefone']?>"
+            <input value="<?php if (!empty($cliente['telefone'])) echo formatar_telefone($cliente['telefone'])?>"
              placeholder="(11) 99999-9999" type="text" name="telefone"/>
         </p>
         <p>
             <label for="nascimento">Data de Nascimento: </label>
-            <input value="<?php if(isset($_POST['nascimento'])) echo $_POST['nascimento']?>" type="text" name="nascimento"/>
+            <input value="<?php if (!empty($cliente['nascimento'])) echo formatar_data($cliente['data'])?>" type="text" name="nascimento"/>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

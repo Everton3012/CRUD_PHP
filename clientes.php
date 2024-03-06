@@ -35,14 +35,11 @@ $num_clientes = $query_clientes->num_rows;
                 while($cliente = $query_clientes->fetch_assoc()) {  
                     $telefone = "Não informado";
                     if (!empty($cliente['telefone'])) {
-                        $ddd = substr($cliente['telefone'], 0, 2); 
-                        $parte1 = substr($cliente['telefone'], 2, 5);
-                        $parte2 = substr($cliente['telefone'], 7);
-                        $telefone = "($ddd) $parte1-$parte2";
+                        $telefone = formatar_telefone(($cliente['telefone']));
                     }
                     $nascimento = "Não informada";
                     if (!empty($cliente['nascimento'])) {
-                        $nascimento = implode('/', array_reverse(explode('-', $cliente['nascimento'])));
+                        $nascimento = formatar_data($cliente['nascimento']);
                     }
                     $data_cadastro = date("d/m/Y H:i", strtotime($cliente['data']));
                         

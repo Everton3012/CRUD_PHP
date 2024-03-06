@@ -7,7 +7,6 @@
         return preg_replace("/[^0-9]/", "", $str);
     }
 
-   
     if (count($_POST) > 0) {
 
         $erro = false;
@@ -57,7 +56,7 @@
     };
     
     $sql_cliente = "SELECT * FROM clientes WHERE id = '$id'";
-    $query_cliente = $mysqli->query(($sql_cliente) or die($mysqli->error));
+    $query_cliente = $mysqli->query($sql_cliente) or die($mysqli->error);
     $cliente = $query_cliente->fetch_assoc();
 ?>
 
@@ -86,7 +85,7 @@
         </p>
         <p>
             <label for="nascimento">Data de Nascimento: </label>
-            <input value="<?php if (!empty($cliente['nascimento'])) echo formatar_data($cliente['data'])?>" type="text" name="nascimento"/>
+            <input value="<?php if (!empty($cliente['nascimento'])) echo formatar_data($cliente['nascimento'])?>" type="text" name="nascimento"/>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

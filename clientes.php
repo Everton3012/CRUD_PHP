@@ -18,6 +18,7 @@ $num_clientes = $query_clientes->num_rows;
     <table border="1" cellpadding="10">
         <thead>
             <th>ID</th>
+            <th>Foto</th>
             <th>Nome</th>
             <th>E-mail</th>
             <th>Telefone</th>
@@ -45,7 +46,9 @@ $num_clientes = $query_clientes->num_rows;
                         
             ?>
                 <tr>
+                    
                     <td><?php echo $cliente['id']?></td>
+                    <td><img src="<?php echo $cliente['foto']?>" height="40" alt="foto de usuario"></td>
                     <td><?php echo $cliente['nome']?></td>
                     <td><?php echo $cliente['email']?></td>
                     <td><?php echo $telefone ?></td>

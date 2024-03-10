@@ -8,6 +8,7 @@
     if (count($_POST) > 0) {
 
         include('conexao.php');
+        include('upload.php');
         include('send.php');
         
         $nome = $_POST['nome'];
@@ -44,11 +45,19 @@
                 $erro = "O telefone deve ser preenchido no padrão (11) 99999-9999";
         };
 
+        $path = "";
+        if (isset($_FILES['foto'])) {
+            $arq = $_FILES['foto'];
+            $path = enviarArquivo($arq['error'],$arq['size'],$arq['name'], $arq['tmp_name']);
+            if($path == false)
+                $erro = "Falha ao enviar arquivo. Tente novamente";
+        }
+
         if($erro) {
             echo "<p><b>ERRO: $erro</b></p>";
         } else {
             $senha = password_hash($senha_descriptografada, PASSWORD_DEFAULT);
-            $sql_code = "INSERT INTO clientes (nome, email, senha, telefone, nascimento, data) VALUES ('$nome', '$email', '$senha' ,'$telefone', '$nascimento', NOW())";
+            $sql_code = "INSERT INTO clientes (nome, email, senha, telefone, foto , nascimento , data ) VALUES ('$nome', '$email', '$senha' ,'$telefone','$path'  , '$nascimento', NOW())";
             $deu_certo = $mysqli->query($sql_code) or die($mysqli->error);
             if ($deu_certo) {
                 enviar_email($email,"sua conta foi criada com sucesso ","<h1>Sua conta ja esta ativa</h1>
@@ -74,7 +83,7 @@
 </head>
 <body>
     <a href="clientes.php">Voltar pra a lista</a>
-    <form method="POST">
+    <form enctype="multipart/form-data" method="POST">
         <p>
             <label for="nome">Nome: </label>
             <input value="<?php if(isset($_POST['nome'])) echo $_POST['nome']?>" type="text" name="nome"/>

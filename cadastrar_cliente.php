@@ -8,11 +8,20 @@
     if (count($_POST) > 0) {
 
         include('conexao.php');
-
+        include('send.php');
+        
         $nome = $_POST['nome'];
         $email = $_POST['email'];
         $telefone = $_POST['telefone'];
         $nascimento = $_POST['nascimento'];
+        $senha_descriptografada = $_POST['senha'];
+
+        if (strlen($senha_descriptografada > 6 && $senha_descriptografada < 16 )) {
+            $erro = "A  senha deve ter entre 6 e 16 caracteres";
+        } else
+            
+
+        
     
         if(empty($nome)) {
             $erro = "Preencha o nome";
@@ -38,9 +47,16 @@
         if($erro) {
             echo "<p><b>ERRO: $erro</b></p>";
         } else {
-            $sql_code = "INSERT INTO clientes (nome, email, telefone, nascimento, data) VALUES ('$nome', '$email', '$telefone', '$nascimento', NOW())";
+            $senha = password_hash($senha_descriptografada, PASSWORD_DEFAULT);
+            $sql_code = "INSERT INTO clientes (nome, email, senha, telefone, nascimento, data) VALUES ('$nome', '$email', '$senha' ,'$telefone', '$nascimento', NOW())";
             $deu_certo = $mysqli->query($sql_code) or die($mysqli->error);
             if ($deu_certo) {
+                enviar_email($email,"sua conta foi criada com sucesso ","<h1>Sua conta ja esta ativa</h1>
+                    <p>
+                        <b>Login: </b> $email <br/>
+                        <b>Senha: </b> $senha_descriptografada
+                    </p>
+                ");
                 print('<p><b>Cliente cadastrado com sucesso!!!
                 </b></p>');
                 unset($_POST);
@@ -75,6 +91,14 @@
         <p>
             <label for="nascimento">Data de Nascimento: </label>
             <input value="<?php if(isset($_POST['nascimento'])) echo $_POST['nascimento']?>" type="text" name="nascimento"/>
+        </p>
+        <p>
+            <label for="senha">Senha: </label>
+            <input value="<?php if(isset($_POST['senha'])) echo $_POST['senha']?>" type="password" name="senha"/>
+        </p>
+        <p>
+            <label for="senha">Foto do Usuário: </label>
+            <input type="file" name="foto"/>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

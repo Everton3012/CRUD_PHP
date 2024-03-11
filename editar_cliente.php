@@ -2,6 +2,7 @@
 
     
     include('conexao.php');
+    include('upload.php');
     $id = intval($_GET['id']);
     function limpar_texto($str){
         return preg_replace("/[^0-9]/", "", $str);
@@ -14,6 +15,17 @@
         $email = $_POST['email'];
         $telefone = $_POST['telefone'];
         $nascimento = $_POST['nascimento'];
+        $senha = $_POST['senha'];
+        $sql_code_extra = "";
+
+        if(!empty($senha)){
+            if (strlen($senha > 6) && strlen($senha < 16 )) {
+                $erro = "A  senha deve ter entre 6 e 16 caracteres";
+            }else {
+                $senha_criptografada = password_hash($senha, PASSWORD_DEFAULT);
+                $sql_code_extra = " senha = ' $senha_criptografada ' , ";
+            }
+        }
     
         if(empty($nome)) {
             $erro = "Preencha o nome";
@@ -36,12 +48,30 @@
                 $erro = "O telefone deve ser preenchido no padrão (11) 99999-9999";
         };
 
+        if (isset($_FILES['foto'])) {
+            $arq = $_FILES['foto'];
+            $path = enviarArquivo($arq['error'],$arq['size'],$arq['name'], $arq['tmp_name']);
+            if($path == false){
+                $erro = "Falha ao enviar arquivo. Tente novamente";
+            }else{
+                $sql_code_extra .= "foto = '$path',";
+            }
+               
+
+            if (!empty($_POST['foto_antiga'])) {
+                unlink($_POST['foto_antiga']);
+            }
+        }
+
         if($erro) {
             echo "<p><b>ERRO: $erro</b></p>";
         } else {
+
+           
             $sql_code = "UPDATE clientes 
             SET nome = '$nome',
-            email = '$email', 
+            email = '$email',
+            $sql_code_extra 
             telefone = '$telefone', 
             nascimento = '$nascimento'
             WHERE id = '$id'";
@@ -69,7 +99,7 @@
 </head>
 <body>
     <a href="clientes.php">Voltar pra a lista</a>
-    <form method="POST">
+    <form enctype="multipart/form-data" method="POST">
         <p>
             <label for="nome">Nome: </label>
             <input value="<?php echo $cliente['nome']?>" type="text" name="nome"/>
@@ -86,6 +116,21 @@
         <p>
             <label for="nascimento">Data de Nascimento: </label>
             <input value="<?php if (!empty($cliente['nascimento'])) echo formatar_data($cliente['nascimento'])?>" type="text" name="nascimento"/>
+        </p>
+        <p>
+            <label for="senha">Senha: </label>
+            <input type="password" name="senha"/>
+        </p>
+        <input type="hidden" name="foto_antiga" value="<?php echo $cliente['foto'] ?>"/>
+        <?php if($cliente['foto']) { ?>
+            <p>
+            <label for="foto">Foto Atual: </label>
+            <img src="<?php echo $cliente['foto'];?>" height="50" alt="">
+        </p>
+        <?php } ?>
+        <p>
+            <label for="foto">Nova Foto do Usuário: </label>
+            <input type="file" name="foto"/>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

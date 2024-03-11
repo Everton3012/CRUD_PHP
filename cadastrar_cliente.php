@@ -17,9 +17,9 @@
         $nascimento = $_POST['nascimento'];
         $senha_descriptografada = $_POST['senha'];
 
-        if (strlen($senha_descriptografada > 6 && $senha_descriptografada < 16 )) {
+        if (strlen($senha_descriptografada > 6) && strlen($senha_descriptografada < 16 )) {
             $erro = "A  senha deve ter entre 6 e 16 caracteres";
-        } else
+        }
             
 
         

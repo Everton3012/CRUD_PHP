@@ -16,6 +16,7 @@ $num_clientes = $query_clientes->num_rows;
 </head>
 <body>
     <h1>Lista de Clientes</h1>
+    <p><a href="cadastrar_cliente.php">Cadastrar um Cliente</a></p>
     <p>Estes são os clientes cadastrados no sistema: </p>
     <table border="1" cellpadding="10">
         <thead>

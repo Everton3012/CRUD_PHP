@@ -1,5 +1,13 @@
 <?php 
 
+if (!isset($_SESSION)) {
+    session_start();
+}
+
+    if(!isset($_SESSION['admin']) || !$_SESSION['admin']){
+    header("Location: clientes.php");
+    die();
+}
     
     include('conexao.php');
     include('upload.php');
@@ -17,6 +25,7 @@
         $nascimento = $_POST['nascimento'];
         $senha = $_POST['senha'];
         $sql_code_extra = "";
+        $admin = $_POST['admin'];
 
         if(!empty($senha)){
             if (strlen($senha > 6) && strlen($senha < 16 )) {
@@ -73,7 +82,8 @@
             email = '$email',
             $sql_code_extra 
             telefone = '$telefone', 
-            nascimento = '$nascimento'
+            nascimento = '$nascimento',
+            admin = '$admin'
             WHERE id = '$id'";
 
             $deu_certo = $mysqli->query($sql_code) or die($mysqli->error);
@@ -131,6 +141,11 @@
         <p>
             <label for="foto">Nova Foto do Usuário: </label>
             <input type="file" name="foto"/>
+        </p>
+        <p>
+            <label for="admin">Tipo: </label>
+            <input type="radio" value="1" name="admin"/><span>ADMIN</span>
+            <input type="radio" checked value="0" name="admin"/><span>CLIENTE</span>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

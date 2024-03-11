@@ -1,5 +1,14 @@
 <?php 
 
+    if (!isset($_SESSION)) {
+    session_start();
+}
+
+    if(!isset($_SESSION['admin']) || !$_SESSION['admin']){
+    header("Location: clientes.php");
+    die();
+}
+
     function limpar_texto($str){
         return preg_replace("/[^0-9]/", "", $str);
     }
@@ -16,6 +25,7 @@
         $telefone = $_POST['telefone'];
         $nascimento = $_POST['nascimento'];
         $senha_descriptografada = $_POST['senha'];
+        $admin = $_POST['admin'];
 
         if (strlen($senha_descriptografada > 6) && strlen($senha_descriptografada < 16 )) {
             $erro = "A  senha deve ter entre 6 e 16 caracteres";
@@ -57,7 +67,7 @@
             echo "<p><b>ERRO: $erro</b></p>";
         } else {
             $senha = password_hash($senha_descriptografada, PASSWORD_DEFAULT);
-            $sql_code = "INSERT INTO clientes (nome, email, senha, telefone, foto , nascimento , data ) VALUES ('$nome', '$email', '$senha' ,'$telefone','$path'  , '$nascimento', NOW())";
+            $sql_code = "INSERT INTO clientes (nome, email, senha, telefone, foto , nascimento , data , admin) VALUES ('$nome', '$email', '$senha' ,'$telefone','$path'  , '$nascimento', NOW(), '$admin')";
             $deu_certo = $mysqli->query($sql_code) or die($mysqli->error);
             if ($deu_certo) {
                 enviar_email($email,"sua conta foi criada com sucesso ","<h1>Sua conta ja esta ativa</h1>
@@ -108,6 +118,11 @@
         <p>
             <label for="senha">Foto do Usuário: </label>
             <input type="file" name="foto"/>
+        </p>
+        <p>
+            <label for="admin">Tipo: </label>
+            <input type="radio" value="1" name="admin"/><span>ADMIN</span>
+            <input type="radio" checked value="0" name="admin"/><span>CLIENTE</span>
         </p>
         <p>
             <input type="submit" value="Salvar Cliente"/>

@@ -1,4 +1,6 @@
-<?php include("conexao.php");
+<?php 
+
+include("conexao.php");
 
 $sql_clientes = "SELECT * FROM clientes";
 $query_clientes = $mysqli->query($sql_clientes) or die($mysqli->error);
